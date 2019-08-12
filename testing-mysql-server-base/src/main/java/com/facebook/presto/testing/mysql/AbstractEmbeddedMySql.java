@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.airlift.testing.mysql;
+package com.facebook.presto.testing.mysql;
 
 import com.google.common.io.ByteStreams;
 import io.airlift.command.Command;
@@ -19,7 +19,6 @@ import io.airlift.command.CommandFailedException;
 import io.airlift.log.Logger;
 import io.airlift.units.Duration;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,10 +50,10 @@ import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
-final class EmbeddedMySql
-        implements Closeable
+public abstract class AbstractEmbeddedMySql
+        implements EmbeddedMySql
 {
-    private static final Logger log = Logger.get(EmbeddedMySql.class);
+    private static final Logger log = Logger.get(AbstractEmbeddedMySql.class);
 
     private static final String JDBC_FORMAT = "jdbc:mysql://localhost:%s/%s?user=%s&useSSL=false";
 
@@ -68,7 +67,7 @@ final class EmbeddedMySql
     private final AtomicBoolean closed = new AtomicBoolean();
     private final Process mysqld;
 
-    public EmbeddedMySql()
+    public AbstractEmbeddedMySql()
             throws IOException
     {
         serverDirectory = createTempDirectory("testing-mysql-server");
@@ -287,7 +286,7 @@ final class EmbeddedMySql
             throws IOException
     {
         String archiveName = format("/mysql-%s.tar.gz", getPlatform());
-        URL url = EmbeddedMySql.class.getResource(archiveName);
+        URL url = AbstractEmbeddedMySql.class.getResource(archiveName);
         if (url == null) {
             throw new RuntimeException("archive not found: " + archiveName);
         }
