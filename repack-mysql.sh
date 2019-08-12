@@ -22,13 +22,6 @@ fi
 STRIP=strip
 command -v gstrip >/dev/null && STRIP=gstrip
 
-if ! $STRIP --version | grep -q "GNU strip"
-then
-    echo "GNU strip is required."
-    echo "Hint: brew install binutils"
-    exit 100
-fi
-
 set -x
 
 cd $(dirname $0)
