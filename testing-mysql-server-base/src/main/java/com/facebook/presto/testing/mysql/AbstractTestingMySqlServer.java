@@ -11,13 +11,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.airlift.testing.mysql;
+package com.facebook.presto.testing.mysql;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import io.airlift.log.Logger;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -26,10 +27,10 @@ import java.util.Set;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
-public final class TestingMySqlServer
+public abstract class AbstractTestingMySqlServer
         implements Closeable
 {
-    private static final Logger log = Logger.get(TestingMySqlServer.class);
+    private static final Logger log = Logger.get(AbstractTestingMySqlServer.class);
 
     private final String user;
     private final String password;
@@ -38,21 +39,20 @@ public final class TestingMySqlServer
     private final String version;
     private final EmbeddedMySql server;
 
-    public TestingMySqlServer(String user, String password, String... databases)
+    public AbstractTestingMySqlServer(EmbeddedMySql server, String user, String password, String... databases)
             throws Exception
     {
-        this(user, password, ImmutableList.copyOf(databases));
+        this(server, user, password, ImmutableList.copyOf(databases));
     }
 
-    public TestingMySqlServer(String user, String password, Iterable<String> databases)
+    public AbstractTestingMySqlServer(EmbeddedMySql server, String user, String password, Iterable<String> databases)
             throws Exception
     {
+        this.server = requireNonNull(server, "server is null");
         this.user = requireNonNull(user, "user is null");
         this.password = requireNonNull(password, "password is null");
         this.databases = ImmutableSet.copyOf(requireNonNull(databases, "databases is null"));
-
-        server = new EmbeddedMySql();
-        port = server.getPort();
+        this.port = server.getPort();
 
         try (Connection connection = server.getMySqlDatabase()) {
             version = connection.getMetaData().getDatabaseProductVersion();
@@ -81,6 +81,7 @@ public final class TestingMySqlServer
 
     @Override
     public void close()
+            throws IOException
     {
         server.close();
     }

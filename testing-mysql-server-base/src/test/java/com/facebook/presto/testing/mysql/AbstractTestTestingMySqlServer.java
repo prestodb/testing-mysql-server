@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.airlift.testing.mysql;
+package com.facebook.presto.testing.mysql;
 
 import com.google.common.collect.ImmutableSet;
 import org.testng.annotations.Test;
@@ -26,13 +26,16 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
-public class TestTestingMySqlServer
+public abstract class AbstractTestTestingMySqlServer
 {
+    public abstract AbstractTestingMySqlServer createMySqlServer(String user, String password, String... databases)
+            throws Exception;
+
     @Test
     public void testDatabase()
             throws Exception
     {
-        try (TestingMySqlServer server = new TestingMySqlServer("testuser", "testpass", "db1", "db2")) {
+        try (AbstractTestingMySqlServer server = createMySqlServer("testuser", "testpass", "db1", "db2")) {
             assertEquals(server.getMySqlVersion(), "5.7.22");
             assertEquals(server.getDatabases(), ImmutableSet.of("db1", "db2"));
             assertEquals(server.getUser(), "testuser");
@@ -64,7 +67,7 @@ public class TestTestingMySqlServer
     public void testGlobal()
             throws Exception
     {
-        try (TestingMySqlServer server = new TestingMySqlServer("testuser", "testpass");
+        try (AbstractTestingMySqlServer server = createMySqlServer("testuser", "testpass");
                 Connection connection = DriverManager.getConnection(server.getJdbcUrl())) {
             assertEquals(connection.getMetaData().getDatabaseProductName(), "MySQL");
 
