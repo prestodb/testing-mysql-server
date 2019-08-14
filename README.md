@@ -14,7 +14,7 @@ Add the library as a test dependency:
 <dependency>
     <groupId>com.facebook.presto</groupId>
     <artifactId>testing-mysql-server</artifactId>
-    <version>5.7.19-1</version>
+    <version>0.1</version>
     <scope>test</scope>
 </dependency>
 ```
