@@ -13,6 +13,8 @@
  */
 package com.facebook.presto.testing.mysql;
 
+import static java.util.Arrays.asList;
+
 public class TestTestingMySqlServer
         extends AbstractTestTestingMySqlServer
 {
@@ -26,6 +28,6 @@ public class TestTestingMySqlServer
     public AbstractTestingMySqlServer createMySqlServer(String user, String password, String... databases)
             throws Exception
     {
-        return new TestingMySqlServer(user, password, databases);
+        return new TestingMySqlServer(user, password, asList(databases), MySqlOptions.builder().build());
     }
 }

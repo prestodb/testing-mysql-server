@@ -13,23 +13,15 @@
  */
 package com.facebook.presto.testing.mysql;
 
-import com.google.common.collect.ImmutableList;
-
 import static java.lang.String.format;
 
 public final class TestingMySqlServer
         extends AbstractTestingMySqlServer
 {
-    public TestingMySqlServer(String user, String password, String... databases)
+    public TestingMySqlServer(String user, String password, Iterable<String> databases, MySqlOptions mySqlOptions)
             throws Exception
     {
-        this(user, password, ImmutableList.copyOf(databases));
-    }
-
-    public TestingMySqlServer(String user, String password, Iterable<String> databases)
-            throws Exception
-    {
-        super(new EmbeddedMySql8(), user, password, databases);
+        super(new EmbeddedMySql8(mySqlOptions), user, password, databases, mySqlOptions);
     }
 
     @Override

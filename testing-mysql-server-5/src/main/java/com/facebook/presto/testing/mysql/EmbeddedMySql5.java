@@ -21,10 +21,10 @@ import java.util.List;
 final class EmbeddedMySql5
         extends AbstractEmbeddedMySql
 {
-    public EmbeddedMySql5()
+    public EmbeddedMySql5(MySqlOptions mySqlOptions)
             throws IOException
     {
-        super();
+        super(mySqlOptions);
     }
 
     @Override

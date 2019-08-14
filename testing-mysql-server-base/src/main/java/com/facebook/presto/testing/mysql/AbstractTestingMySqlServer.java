@@ -13,7 +13,6 @@
  */
 package com.facebook.presto.testing.mysql;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import io.airlift.log.Logger;
 
@@ -39,13 +38,7 @@ public abstract class AbstractTestingMySqlServer
     private final String version;
     private final EmbeddedMySql server;
 
-    public AbstractTestingMySqlServer(EmbeddedMySql server, String user, String password, String... databases)
-            throws Exception
-    {
-        this(server, user, password, ImmutableList.copyOf(databases));
-    }
-
-    public AbstractTestingMySqlServer(EmbeddedMySql server, String user, String password, Iterable<String> databases)
+    public AbstractTestingMySqlServer(EmbeddedMySql server, String user, String password, Iterable<String> databases, MySqlOptions mySqlOptions)
             throws Exception
     {
         this.server = requireNonNull(server, "server is null");
