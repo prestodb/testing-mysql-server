@@ -18,10 +18,10 @@ import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.util.List;
 
-final class EmbeddedMySql5
+final class EmbeddedMySql8
         extends AbstractEmbeddedMySql
 {
-    public EmbeddedMySql5()
+    public EmbeddedMySql8()
             throws IOException
     {
         super();
@@ -33,7 +33,6 @@ final class EmbeddedMySql5
         return ImmutableList.of(
                 "--no-defaults",
                 "--initialize-insecure",
-                "--skip-sync-frm",
                 "--innodb-flush-method=nosync",
                 "--datadir", getDataDirectory());
     }
@@ -44,10 +43,9 @@ final class EmbeddedMySql5
         return ImmutableList.of(
                 "--no-defaults",
                 "--skip-ssl",
+                "--skip-mysqlx",
                 "--default-time-zone=+00:00",
-                "--disable-partition-engine-check",
                 "--explicit_defaults_for_timestamp",
-                "--skip-sync-frm",
                 "--innodb-flush-method=nosync",
                 "--innodb-flush-log-at-trx-commit=0",
                 "--innodb-doublewrite=0",

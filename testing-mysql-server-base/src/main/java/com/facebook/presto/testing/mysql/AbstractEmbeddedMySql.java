@@ -13,6 +13,7 @@
  */
 package com.facebook.presto.testing.mysql;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.io.ByteStreams;
 import io.airlift.command.Command;
 import io.airlift.command.CommandFailedException;
@@ -37,7 +38,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static com.google.common.base.MoreObjects.toStringHelper;
 import static com.google.common.base.StandardSystemProperty.OS_ARCH;
 import static com.google.common.base.StandardSystemProperty.OS_NAME;
-import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.io.MoreFiles.deleteRecursively;
 import static com.google.common.io.RecursiveDeleteOption.ALLOW_INSECURE;
 import static io.airlift.concurrent.Threads.daemonThreadsNamed;
@@ -85,6 +85,10 @@ public abstract class AbstractEmbeddedMySql
         }
     }
 
+    public abstract List<String> getInitializationArguments();
+
+    public abstract List<String> getStartArguments();
+
     public String getJdbcUrl(String userName, String dbName)
     {
         return format(JDBC_FORMAT, port, dbName, userName);
@@ -99,6 +103,26 @@ public abstract class AbstractEmbeddedMySql
             throws SQLException
     {
         return DriverManager.getConnection(getJdbcUrl("root", "mysql"));
+    }
+
+    protected String getMysqld()
+    {
+        return serverDirectory.resolve("bin").resolve("mysqld").toString();
+    }
+
+    protected String getDataDirectory()
+    {
+        return serverDirectory.resolve("data").toString();
+    }
+
+    protected String getShareDirectory()
+    {
+        return serverDirectory.resolve("share").toString();
+    }
+
+    protected String getSocketDirectory()
+    {
+        return serverDirectory.resolve("mysql.sock").toString();
     }
 
     @Override
@@ -154,34 +178,16 @@ public abstract class AbstractEmbeddedMySql
 
     private void initialize()
     {
-        system(mysqld(),
-                "--no-defaults",
-                "--initialize-insecure",
-                "--skip-sync-frm",
-                "--innodb-flush-method=nosync",
-                "--datadir", dataDir());
+        system(ImmutableList.<String>builder()
+                .add(getMysqld())
+                .addAll(getInitializationArguments())
+                .build());
     }
 
     private Process startMysqld()
             throws IOException
     {
-        List<String> args = newArrayList(
-                mysqld(),
-                "--no-defaults",
-                "--skip-ssl",
-                "--disable-partition-engine-check",
-                "--explicit_defaults_for_timestamp",
-                "--skip-sync-frm",
-                "--innodb-flush-method=nosync",
-                "--innodb-flush-log-at-trx-commit=0",
-                "--innodb-doublewrite=0",
-                "--bind-address=localhost",
-                "--lc_messages_dir", serverDirectory.resolve("share").toString(),
-                "--socket", serverDirectory.resolve("mysql.sock").toString(),
-                "--port", String.valueOf(port),
-                "--datadir", dataDir());
-
-        Process process = new ProcessBuilder(args)
+        Process process = new ProcessBuilder(ImmutableList.<String>builder().add(getMysqld()).addAll(getStartArguments()).build())
                 .redirectErrorStream(true)
                 .start();
 
@@ -192,16 +198,6 @@ public abstract class AbstractEmbeddedMySql
         waitForServerStartup(process);
 
         return process;
-    }
-
-    private String mysqld()
-    {
-        return serverDirectory.resolve("bin").resolve("mysqld").toString();
-    }
-
-    private String dataDir()
-    {
-        return serverDirectory.resolve("data").toString();
     }
 
     private void waitForServerStartup(Process process)
@@ -270,10 +266,10 @@ public abstract class AbstractEmbeddedMySql
         });
     }
 
-    private void system(String... command)
+    private void system(List<String> command)
     {
         try {
-            new Command(command)
+            new Command(command.toArray(new String[0]))
                     .setTimeLimit(COMMAND_TIMEOUT)
                     .execute(executor);
         }
@@ -296,7 +292,7 @@ public abstract class AbstractEmbeddedMySql
             try (InputStream in = url.openStream()) {
                 copy(in, archive.toPath(), REPLACE_EXISTING);
             }
-            system("tar", "-xzf", archive.getPath(), "-C", target.toString());
+            system(ImmutableList.of("tar", "-xf", archive.getPath(), "-C", target.toString()));
         }
         finally {
             if (!archive.delete()) {
