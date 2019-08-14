@@ -113,11 +113,8 @@ public abstract class AbstractTestingMySqlServer
 
     public String getJdbcUrl()
     {
-        return format("jdbc:mysql://localhost:%s?user=%s&password=%s&useSSL=false", port, user, password);
+        return getJdbcUrl("");
     }
 
-    public String getJdbcUrl(String database)
-    {
-        return format("jdbc:mysql://localhost:%s/%s?user=%s&password=%s&useSSL=false", port, database, user, password);
-    }
+    public abstract String getJdbcUrl(String database);
 }

@@ -29,12 +29,12 @@ public final class TestingMySqlServer
     public TestingMySqlServer(String user, String password, Iterable<String> databases)
             throws Exception
     {
-        super(new EmbeddedMySql5(), user, password, databases);
+        super(new EmbeddedMySql8(), user, password, databases);
     }
 
     @Override
     public String getJdbcUrl(String database)
     {
-        return format("jdbc:mysql://localhost:%s/%s?user=%s&password=%s&useSSL=false", getPort(), database, getUser(), getPassword());
+        return format("jdbc:mysql://localhost:%s/%s?user=%s&password=%s&useSSL=false&allowPublicKeyRetrieval=true", getPort(), database, getUser(), getPassword());
     }
 }

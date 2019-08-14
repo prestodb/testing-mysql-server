@@ -28,6 +28,8 @@ import static org.testng.Assert.assertTrue;
 
 public abstract class AbstractTestTestingMySqlServer
 {
+    public abstract String getMySqlVersion();
+
     public abstract AbstractTestingMySqlServer createMySqlServer(String user, String password, String... databases)
             throws Exception;
 
@@ -36,7 +38,7 @@ public abstract class AbstractTestTestingMySqlServer
             throws Exception
     {
         try (AbstractTestingMySqlServer server = createMySqlServer("testuser", "testpass", "db1", "db2")) {
-            assertEquals(server.getMySqlVersion(), "5.7.22");
+            assertEquals(server.getMySqlVersion(), getMySqlVersion());
             assertEquals(server.getDatabases(), ImmutableSet.of("db1", "db2"));
             assertEquals(server.getUser(), "testuser");
             assertEquals(server.getPassword(), "testpass");
