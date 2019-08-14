@@ -45,7 +45,6 @@ final class EmbeddedMySql8
                 "--skip-ssl",
                 "--skip-mysqlx",
                 "--default-time-zone=+00:00",
-                "--explicit_defaults_for_timestamp",
                 "--innodb-flush-method=nosync",
                 "--innodb-flush-log-at-trx-commit=0",
                 "--innodb-doublewrite=0",
