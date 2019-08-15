@@ -37,7 +37,7 @@
         <air.check.skip-findbugs>true</air.check.skip-findbugs>
         <air.check.skip-pmd>true</air.check.skip-pmd>
 
-        <dep.airlift.version>0.149</dep.airlift.version>
+        <dep.airlift.version>0.178</dep.airlift.version>
     </properties>
 
     <modules>
