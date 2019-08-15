@@ -9,7 +9,7 @@
 
     <groupId>com.facebook.presto</groupId>
     <artifactId>testing-mysql-server-root</artifactId>
-    <version>0.1</version>
+    <version>0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>testing-mysql-server-root</name>
@@ -29,7 +29,7 @@
     <scm>
         <connection>scm:git:git@github.com/prestodb/testing-mysql-server.git</connection>
         <url>https://github.com/prestodb/testing-mysql-server</url>
-        <tag>0.1</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
