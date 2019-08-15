@@ -4,7 +4,7 @@
     <parent>
         <groupId>io.airlift</groupId>
         <artifactId>airbase</artifactId>
-        <version>69</version>
+        <version>88</version>
     </parent>
 
     <groupId>com.facebook.presto</groupId>
@@ -17,6 +17,14 @@
     <url>https://github.com/prestodb/testing-mysql-server</url>
 
     <inceptionYear>2019</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <scm>
         <connection>scm:git:git@github.com/prestodb/airbase.git</connection>
