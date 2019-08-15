@@ -27,7 +27,7 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:git@github.com/prestodb/airbase.git</connection>
+        <connection>scm:git:git@github.com/prestodb/testing-mysql-server.git</connection>
         <url>https://github.com/prestodb/testing-mysql-server</url>
         <tag>HEAD</tag>
     </scm>
