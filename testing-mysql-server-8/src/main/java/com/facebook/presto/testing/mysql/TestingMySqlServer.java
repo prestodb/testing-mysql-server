@@ -13,11 +13,25 @@
  */
 package com.facebook.presto.testing.mysql;
 
+import java.util.Arrays;
+
 import static java.lang.String.format;
 
 public final class TestingMySqlServer
         extends AbstractTestingMySqlServer
 {
+    public TestingMySqlServer(String user, String password, String... databases)
+            throws Exception
+    {
+        this(user, password, Arrays.asList(databases));
+    }
+
+    public TestingMySqlServer(String user, String password, Iterable<String> databases)
+            throws Exception
+    {
+        this(user, password, databases, MySqlOptions.builder().build());
+    }
+
     public TestingMySqlServer(String user, String password, Iterable<String> databases, MySqlOptions mySqlOptions)
             throws Exception
     {
