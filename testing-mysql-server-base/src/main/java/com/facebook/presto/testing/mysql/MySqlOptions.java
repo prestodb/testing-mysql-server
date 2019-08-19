@@ -55,7 +55,7 @@ public class MySqlOptions
     {
         private Duration startupWait = new Duration(10, SECONDS);
         private Duration shutdownWait = new Duration(10, SECONDS);
-        private Duration commandTimeout = new Duration(30, SECONDS);
+        private Duration commandTimeout = new Duration(90, SECONDS);
 
         public Builder setStartupWait(Duration startupWait)
         {
