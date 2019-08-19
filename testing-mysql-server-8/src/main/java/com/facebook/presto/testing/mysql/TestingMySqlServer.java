@@ -21,7 +21,7 @@ public final class TestingMySqlServer
     public TestingMySqlServer(String user, String password, Iterable<String> databases, MySqlOptions mySqlOptions)
             throws Exception
     {
-        super(new EmbeddedMySql8(mySqlOptions), user, password, databases, mySqlOptions);
+        super(new EmbeddedMySql8(mySqlOptions), user, password, databases);
     }
 
     @Override

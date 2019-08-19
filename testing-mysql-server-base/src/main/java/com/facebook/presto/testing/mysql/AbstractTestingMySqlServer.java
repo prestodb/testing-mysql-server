@@ -38,7 +38,7 @@ public abstract class AbstractTestingMySqlServer
     private final String version;
     private final EmbeddedMySql server;
 
-    public AbstractTestingMySqlServer(EmbeddedMySql server, String user, String password, Iterable<String> databases, MySqlOptions mySqlOptions)
+    public AbstractTestingMySqlServer(EmbeddedMySql server, String user, String password, Iterable<String> databases)
             throws Exception
     {
         this.server = requireNonNull(server, "server is null");
