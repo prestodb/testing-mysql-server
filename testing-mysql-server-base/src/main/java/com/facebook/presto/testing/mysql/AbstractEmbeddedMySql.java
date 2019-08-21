@@ -32,6 +32,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -55,7 +56,7 @@ public abstract class AbstractEmbeddedMySql
 {
     private static final Logger log = Logger.get(AbstractEmbeddedMySql.class);
 
-    private static final String JDBC_FORMAT = "jdbc:mysql://localhost:%s/%s?user=%s&useSSL=false";
+    private static final String JDBC_FORMAT = "jdbc:mysql://localhost:%s/%s?user=%s&useSSL=false&serverTimezone=" + TimeZone.getDefault().getID();
 
     private final ExecutorService executor = newCachedThreadPool(daemonThreadsNamed("testing-mysql-server-%s"));
     private final Path serverDirectory;

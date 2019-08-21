@@ -14,6 +14,7 @@
 package com.facebook.presto.testing.mysql;
 
 import java.util.Arrays;
+import java.util.TimeZone;
 
 import static java.lang.String.format;
 
@@ -41,6 +42,6 @@ public final class TestingMySqlServer
     @Override
     public String getJdbcUrl(String database)
     {
-        return format("jdbc:mysql://localhost:%s/%s?user=%s&password=%s&useSSL=false&allowPublicKeyRetrieval=true", getPort(), database, getUser(), getPassword());
+        return format("jdbc:mysql://localhost:%s/%s?user=%s&password=%s&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=" + TimeZone.getDefault().getID(), getPort(), database, getUser(), getPassword());
     }
 }
