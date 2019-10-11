@@ -13,8 +13,8 @@
  */
 package com.facebook.presto.testing.mysql;
 
+import com.facebook.airlift.log.Logger;
 import com.google.common.collect.ImmutableSet;
-import io.airlift.log.Logger;
 
 import java.io.Closeable;
 import java.io.IOException;
