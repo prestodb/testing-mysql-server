@@ -1,5 +1,5 @@
 # Testing MySQL Server
-[![Maven Central](https://img.shields.io/maven-central/v/com.facebook.presto/testing-mysql-server.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:com.facebook.presto%20AND%20a:testing-mysql-server)
+[![Maven Central](https://img.shields.io/maven-central/v/com.facebook.presto/testing-mysql-server-root.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:com.facebook.presto%20AND%20a:testing-mysql-server)
 [![Build Status](https://travis-ci.org/prestodb/testing-mysql-server.svg?branch=master)](https://travis-ci.org/prestodb/testing-mysql-server)
 
 Embedded MySQL server for use in tests. It allows testing your Java or
