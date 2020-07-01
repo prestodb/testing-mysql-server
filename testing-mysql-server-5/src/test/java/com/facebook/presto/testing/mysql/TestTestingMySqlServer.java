@@ -18,10 +18,13 @@ import static java.util.Arrays.asList;
 public class TestTestingMySqlServer
         extends AbstractTestTestingMySqlServer
 {
+    // for ppc64le, mariadb 10.2.x is used as an alternative for mysql 5.7
+    private static final boolean isMariadb = System.getProperty("os.arch").equals("ppc64le");
+
     @Override
     public String getMySqlVersion()
     {
-        return "5.7.22";
+        return (isMariadb ? "5.5.5-10.2.32-MariaDB" : "5.7.22");
     }
 
     @Override
