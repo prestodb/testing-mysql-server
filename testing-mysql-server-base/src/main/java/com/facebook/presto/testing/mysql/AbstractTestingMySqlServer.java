@@ -31,6 +31,9 @@ public abstract class AbstractTestingMySqlServer
 {
     private static final Logger log = Logger.get(AbstractTestingMySqlServer.class);
 
+    // for ppc64le, mariadb 10.2.x is used as an alternative for mysql 5.7
+    private static final boolean isMariadb = System.getProperty("os.arch").equals("ppc64le");
+
     private final String user;
     private final String password;
     private final Set<String> databases;
@@ -50,8 +53,8 @@ public abstract class AbstractTestingMySqlServer
         try (Connection connection = server.getMySqlDatabase()) {
             version = connection.getMetaData().getDatabaseProductVersion();
             try (Statement statement = connection.createStatement()) {
-                execute(statement, format("CREATE USER '%s'@'%%' IDENTIFIED BY '%s'", user, password));
-                execute(statement, format("GRANT ALL ON *.* to '%s'@'%%' WITH GRANT OPTION", user));
+                execute(statement, format("CREATE USER '%s'@'%s' IDENTIFIED BY '%s'", user, isMariadb ? "localhost" : "%%", password));
+                execute(statement, format("GRANT ALL ON *.* to '%s'@'%s' WITH GRANT OPTION", user, isMariadb ? "localhost" : "%%"));
                 for (String database : databases) {
                     execute(statement, format("CREATE DATABASE %s", database));
                 }

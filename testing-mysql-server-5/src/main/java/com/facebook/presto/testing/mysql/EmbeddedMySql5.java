@@ -30,31 +30,60 @@ final class EmbeddedMySql5
     @Override
     public List<String> getInitializationArguments()
     {
-        return ImmutableList.of(
+        if (isMariadb) {
+            return ImmutableList.of(
                 "--no-defaults",
-                "--initialize-insecure",
+                "--basedir=" + getBaseDirectory(),
+                "--datadir=" + getDataDirectory(),
                 "--skip-sync-frm",
-                "--innodb-flush-method=nosync",
-                "--datadir", getDataDirectory());
+                "--innodb-flush-method=nosync");
+        }
+        else {
+            return ImmutableList.of(
+                    "--no-defaults",
+                    "--initialize-insecure",
+                    "--skip-sync-frm",
+                    "--innodb-flush-method=nosync",
+                    "--datadir", getDataDirectory());
+        }
     }
 
     @Override
     public List<String> getStartArguments()
     {
-        return ImmutableList.of(
-                "--no-defaults",
-                "--skip-ssl",
-                "--default-time-zone=+00:00",
-                "--disable-partition-engine-check",
-                "--explicit_defaults_for_timestamp",
-                "--skip-sync-frm",
-                "--innodb-flush-method=nosync",
-                "--innodb-flush-log-at-trx-commit=0",
-                "--innodb-doublewrite=0",
-                "--bind-address=localhost",
-                "--lc_messages_dir", getShareDirectory(),
-                "--socket", getSocketDirectory(),
-                "--port", String.valueOf(getPort()),
-                "--datadir", getDataDirectory());
+        if (isMariadb) {
+            return ImmutableList.of(
+                    "--no-defaults",
+                    "--default-time-zone=+00:00",
+                    "--skip-sync-frm",
+                    "--innodb-flush-method=nosync",
+                    "--innodb-flush-log-at-trx-commit=0",
+                    "--innodb-doublewrite=0",
+                    "--bind-address=localhost",
+                    "--basedir=" + getBaseDirectory(),
+                    "--plugin-dir=" + getPluginDirectory(),
+                    "--log-error=" + getDataDirectory() + "mariadb.log",
+                    "--pid-file=" + getDataDirectory() + "mariadb.pid",
+                    "--socket=" + getDataDirectory() + "mysql.sock",
+                    "--port=" + String.valueOf(getPort()),
+                    "--datadir=" + getDataDirectory());
+        }
+        else {
+            return ImmutableList.of(
+                    "--no-defaults",
+                    "--skip-ssl",
+                    "--default-time-zone=+00:00",
+                    "--disable-partition-engine-check",
+                    "--explicit_defaults_for_timestamp",
+                    "--skip-sync-frm",
+                    "--innodb-flush-method=nosync",
+                    "--innodb-flush-log-at-trx-commit=0",
+                    "--innodb-doublewrite=0",
+                    "--bind-address=localhost",
+                    "--lc_messages_dir", getShareDirectory(),
+                    "--socket", getSocketDirectory(),
+                    "--port", String.valueOf(getPort()),
+                    "--datadir", getDataDirectory());
+        }
     }
 }

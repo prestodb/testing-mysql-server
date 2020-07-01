@@ -68,6 +68,9 @@ public abstract class AbstractEmbeddedMySql
     private final Duration shutdownWait;
     private final Duration commandTimeout;
 
+    // for ppc64le, mariadb 10.2.x is used as an alternative for mysql 5.7
+    protected final boolean isMariadb = System.getProperty("os.arch").equals("ppc64le");
+
     public AbstractEmbeddedMySql(MySqlOptions mySqlOptions)
             throws IOException
     {
@@ -110,6 +113,16 @@ public abstract class AbstractEmbeddedMySql
         return DriverManager.getConnection(getJdbcUrl("root", "mysql"));
     }
 
+    protected String getMysqlInstallDb()
+    {
+        return (isMariadb ? serverDirectory.resolve("bin").resolve("mysql_install_db").toString() : "");
+    }
+
+    protected String getBaseDirectory()
+    {
+        return serverDirectory.toString();
+    }
+
     protected String getMysqld()
     {
         return serverDirectory.resolve("bin").resolve("mysqld").toString();
@@ -127,7 +140,12 @@ public abstract class AbstractEmbeddedMySql
 
     protected String getSocketDirectory()
     {
-        return serverDirectory.resolve("mysql.sock").toString();
+        return (isMariadb ? "" : serverDirectory.resolve("mysql.sock").toString());
+    }
+
+    protected String getPluginDirectory()
+    {
+        return (isMariadb ? serverDirectory.resolve("lib64").resolve("mysql").resolve("plugin").toString() : "");
     }
 
     @Override
@@ -183,10 +201,18 @@ public abstract class AbstractEmbeddedMySql
 
     private void initialize()
     {
-        system(ImmutableList.<String>builder()
-                .add(getMysqld())
-                .addAll(getInitializationArguments())
-                .build());
+        if (isMariadb) {
+            system(ImmutableList.<String>builder()
+                    .add(getMysqlInstallDb())
+                    .addAll(getInitializationArguments())
+                    .build());
+        }
+        else {
+            system(ImmutableList.<String>builder()
+                    .add(getMysqld())
+                    .addAll(getInitializationArguments())
+                    .build());
+        }
     }
 
     private Process startMysqld()
