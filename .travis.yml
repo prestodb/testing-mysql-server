@@ -3,5 +3,11 @@ language: java
 jdk: 
  - openjdk8
 
+addon:
+ apt:
+  packages:
+   - rpm2cpio
+   - cpio
+
 install: true
 script: mvn verify
