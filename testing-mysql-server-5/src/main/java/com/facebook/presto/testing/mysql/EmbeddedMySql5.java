@@ -13,9 +13,11 @@
  */
 package com.facebook.presto.testing.mysql;
 
+import com.google.common.base.VerifyException;
 import com.google.common.collect.ImmutableList;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 final class EmbeddedMySql5
@@ -30,60 +32,48 @@ final class EmbeddedMySql5
     @Override
     public List<String> getInitializationArguments()
     {
-        if (isMariadb) {
-            return ImmutableList.of(
+        List<String> list = Arrays.asList(
                 "--no-defaults",
-                "--basedir=" + getBaseDirectory(),
-                "--datadir=" + getDataDirectory(),
                 "--skip-sync-frm",
-                "--innodb-flush-method=nosync");
+                "--innodb-flush-method=nosync",
+                "--datadir=" + getDataDirectory());
+
+        if (isMariadb) {
+            return ImmutableList.<String>builder().addAll(list).add("--basedir=" + getBaseDirectory()).build();
         }
         else {
-            return ImmutableList.of(
-                    "--no-defaults",
-                    "--initialize-insecure",
-                    "--skip-sync-frm",
-                    "--innodb-flush-method=nosync",
-                    "--datadir", getDataDirectory());
+            return ImmutableList.<String>builder().addAll(list).add("--initialize-insecure").build();
         }
     }
 
     @Override
-    public List<String> getStartArguments()
+    public List<String> getStartArguments() throws VerifyException
     {
+        List<String> list = Arrays.asList(
+                "--no-defaults",
+                "--default-time-zone=+00:00",
+                "--skip-sync-frm",
+                "--innodb-flush-method=nosync",
+                "--innodb-flush-log-at-trx-commit=0",
+                "--innodb-doublewrite=0",
+                "--bind-address=localhost",
+                "--port=" + String.valueOf(getPort()),
+                "--datadir=" + getDataDirectory(),
+                "--socket=" + getSocketDirectory());
+
         if (isMariadb) {
-            return ImmutableList.of(
-                    "--no-defaults",
-                    "--default-time-zone=+00:00",
-                    "--skip-sync-frm",
-                    "--innodb-flush-method=nosync",
-                    "--innodb-flush-log-at-trx-commit=0",
-                    "--innodb-doublewrite=0",
-                    "--bind-address=localhost",
-                    "--basedir=" + getBaseDirectory(),
-                    "--plugin-dir=" + getPluginDirectory(),
-                    "--log-error=" + getDataDirectory() + "mariadb.log",
-                    "--pid-file=" + getDataDirectory() + "mariadb.pid",
-                    "--socket=" + getDataDirectory() + "mysql.sock",
-                    "--port=" + String.valueOf(getPort()),
-                    "--datadir=" + getDataDirectory());
+            return ImmutableList.<String>builder().addAll(list).add(
+                "--basedir=" + getBaseDirectory(),
+                "--plugin-dir=" + getMariadbPluginDirectory(),
+                "--log-error=" + getDataDirectory() + "mariadb.log",
+                "--pid-file=" + getDataDirectory() + "mariadb.pid").build();
         }
         else {
-            return ImmutableList.of(
-                    "--no-defaults",
-                    "--skip-ssl",
-                    "--default-time-zone=+00:00",
-                    "--disable-partition-engine-check",
-                    "--explicit_defaults_for_timestamp",
-                    "--skip-sync-frm",
-                    "--innodb-flush-method=nosync",
-                    "--innodb-flush-log-at-trx-commit=0",
-                    "--innodb-doublewrite=0",
-                    "--bind-address=localhost",
-                    "--lc_messages_dir", getShareDirectory(),
-                    "--socket", getSocketDirectory(),
-                    "--port", String.valueOf(getPort()),
-                    "--datadir", getDataDirectory());
+            return ImmutableList.<String>builder().addAll(list).add(
+                "--skip-ssl",
+                "--disable-partition-engine-check",
+                "--explicit_defaults_for_timestamp",
+                "--lc_messages_dir=" + getShareDirectory()).build();
         }
     }
 }

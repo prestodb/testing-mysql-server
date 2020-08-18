@@ -14,6 +14,7 @@
 package com.facebook.presto.testing.mysql;
 
 import com.facebook.airlift.log.Logger;
+import com.google.common.base.VerifyException;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.ByteStreams;
 import io.airlift.command.Command;
@@ -72,7 +73,7 @@ public abstract class AbstractEmbeddedMySql
     protected final boolean isMariadb = System.getProperty("os.arch").equals("ppc64le");
 
     public AbstractEmbeddedMySql(MySqlOptions mySqlOptions)
-            throws IOException
+            throws IOException, VerifyException
     {
         this.startupWait = requireNonNull(mySqlOptions.getStartupWait(), "startupWait is null");
         this.shutdownWait = requireNonNull(mySqlOptions.getShutdownWait(), "shutdownWait is null");
@@ -113,9 +114,12 @@ public abstract class AbstractEmbeddedMySql
         return DriverManager.getConnection(getJdbcUrl("root", "mysql"));
     }
 
-    protected String getMysqlInstallDb()
+    protected String getMariadbInstallDb() throws VerifyException
     {
-        return (isMariadb ? serverDirectory.resolve("bin").resolve("mysql_install_db").toString() : "");
+        if (!isMariadb) {
+            throw new VerifyException("mysql_install_db not applicable to non-mariadb installations");
+        }
+        return serverDirectory.resolve("bin").resolve("mysql_install_db").toString();
     }
 
     protected String getBaseDirectory()
@@ -140,12 +144,15 @@ public abstract class AbstractEmbeddedMySql
 
     protected String getSocketDirectory()
     {
-        return (isMariadb ? "" : serverDirectory.resolve("mysql.sock").toString());
+        return (isMariadb ? getDataDirectory() + "mysql.sock" : serverDirectory.resolve("mysql.sock").toString());
     }
 
-    protected String getPluginDirectory()
+    protected String getMariadbPluginDirectory() throws VerifyException
     {
-        return (isMariadb ? serverDirectory.resolve("lib64").resolve("mysql").resolve("plugin").toString() : "");
+        if (!isMariadb) {
+            throw new VerifyException("--plugin-dir option not applicable to non-mariadb installations");
+        }
+        return serverDirectory.resolve("lib64").resolve("mysql").resolve("plugin").toString();
     }
 
     @Override
@@ -199,11 +206,11 @@ public abstract class AbstractEmbeddedMySql
         }
     }
 
-    private void initialize()
+    private void initialize() throws VerifyException
     {
         if (isMariadb) {
             system(ImmutableList.<String>builder()
-                    .add(getMysqlInstallDb())
+                    .add(getMariadbInstallDb())
                     .addAll(getInitializationArguments())
                     .build());
         }
@@ -216,7 +223,7 @@ public abstract class AbstractEmbeddedMySql
     }
 
     private Process startMysqld()
-            throws IOException
+            throws IOException, VerifyException
     {
         Process process = new ProcessBuilder(ImmutableList.<String>builder().add(getMysqld()).addAll(getStartArguments()).build())
                 .redirectErrorStream(true)

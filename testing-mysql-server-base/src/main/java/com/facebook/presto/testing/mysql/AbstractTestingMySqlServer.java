@@ -53,8 +53,8 @@ public abstract class AbstractTestingMySqlServer
         try (Connection connection = server.getMySqlDatabase()) {
             version = connection.getMetaData().getDatabaseProductVersion();
             try (Statement statement = connection.createStatement()) {
-                execute(statement, format("CREATE USER '%s'@'%s' IDENTIFIED BY '%s'", user, isMariadb ? "localhost" : "%%", password));
-                execute(statement, format("GRANT ALL ON *.* to '%s'@'%s' WITH GRANT OPTION", user, isMariadb ? "localhost" : "%%"));
+                execute(statement, format("CREATE USER '%s'@'localhost' IDENTIFIED BY '%s'", user, password));
+                execute(statement, format("GRANT ALL ON *.* to '%s'@'localhost' WITH GRANT OPTION", user));
                 for (String database : databases) {
                     execute(statement, format("CREATE DATABASE %s", database));
                 }
