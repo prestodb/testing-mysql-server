@@ -73,7 +73,7 @@ public abstract class AbstractEmbeddedMySql
     protected final boolean isMariadb = System.getProperty("os.arch").equals("ppc64le");
 
     public AbstractEmbeddedMySql(MySqlOptions mySqlOptions)
-            throws IOException, VerifyException
+            throws IOException
     {
         this.startupWait = requireNonNull(mySqlOptions.getStartupWait(), "startupWait is null");
         this.shutdownWait = requireNonNull(mySqlOptions.getShutdownWait(), "shutdownWait is null");
@@ -114,7 +114,7 @@ public abstract class AbstractEmbeddedMySql
         return DriverManager.getConnection(getJdbcUrl("root", "mysql"));
     }
 
-    protected String getMariadbInstallDb() throws VerifyException
+    protected String getMariadbInstallDb()
     {
         if (!isMariadb) {
             throw new VerifyException("mysql_install_db not applicable to non-mariadb installations");
@@ -147,7 +147,7 @@ public abstract class AbstractEmbeddedMySql
         return (isMariadb ? getDataDirectory() + "mysql.sock" : serverDirectory.resolve("mysql.sock").toString());
     }
 
-    protected String getMariadbPluginDirectory() throws VerifyException
+    protected String getMariadbPluginDirectory()
     {
         if (!isMariadb) {
             throw new VerifyException("--plugin-dir option not applicable to non-mariadb installations");
@@ -206,7 +206,7 @@ public abstract class AbstractEmbeddedMySql
         }
     }
 
-    private void initialize() throws VerifyException
+    private void initialize()
     {
         if (isMariadb) {
             system(ImmutableList.<String>builder()
@@ -223,7 +223,7 @@ public abstract class AbstractEmbeddedMySql
     }
 
     private Process startMysqld()
-            throws IOException, VerifyException
+            throws IOException
     {
         Process process = new ProcessBuilder(ImmutableList.<String>builder().add(getMysqld()).addAll(getStartArguments()).build())
                 .redirectErrorStream(true)

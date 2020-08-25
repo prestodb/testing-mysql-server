@@ -13,11 +13,9 @@
  */
 package com.facebook.presto.testing.mysql;
 
-import com.google.common.base.VerifyException;
 import com.google.common.collect.ImmutableList;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 final class EmbeddedMySql5
@@ -32,48 +30,54 @@ final class EmbeddedMySql5
     @Override
     public List<String> getInitializationArguments()
     {
-        List<String> list = Arrays.asList(
-                "--no-defaults",
-                "--skip-sync-frm",
-                "--innodb-flush-method=nosync",
-                "--datadir=" + getDataDirectory());
+        ImmutableList.Builder<String> iList = ImmutableList.<String>builder()
+                .add(
+                    "--no-defaults",
+                    "--skip-sync-frm",
+                    "--innodb-flush-method=nosync",
+                    "--datadir=" + getDataDirectory());
 
         if (isMariadb) {
-            return ImmutableList.<String>builder().addAll(list).add("--basedir=" + getBaseDirectory()).build();
+            return iList.add("--basedir=" + getBaseDirectory()).build();
         }
         else {
-            return ImmutableList.<String>builder().addAll(list).add("--initialize-insecure").build();
+            return iList.add("--initialize-insecure").build();
         }
     }
 
     @Override
-    public List<String> getStartArguments() throws VerifyException
+    public List<String> getStartArguments()
     {
-        List<String> list = Arrays.asList(
-                "--no-defaults",
-                "--default-time-zone=+00:00",
-                "--skip-sync-frm",
-                "--innodb-flush-method=nosync",
-                "--innodb-flush-log-at-trx-commit=0",
-                "--innodb-doublewrite=0",
-                "--bind-address=localhost",
-                "--port=" + String.valueOf(getPort()),
-                "--datadir=" + getDataDirectory(),
-                "--socket=" + getSocketDirectory());
+        ImmutableList.Builder<String> iList = ImmutableList.<String>builder()
+                .add(
+                    "--no-defaults",
+                    "--default-time-zone=+00:00",
+                    "--skip-sync-frm",
+                    "--innodb-flush-method=nosync",
+                    "--innodb-flush-log-at-trx-commit=0",
+                    "--innodb-doublewrite=0",
+                    "--bind-address=localhost",
+                    "--port=" + String.valueOf(getPort()),
+                    "--datadir=" + getDataDirectory(),
+                    "--socket=" + getSocketDirectory());
 
         if (isMariadb) {
-            return ImmutableList.<String>builder().addAll(list).add(
-                "--basedir=" + getBaseDirectory(),
-                "--plugin-dir=" + getMariadbPluginDirectory(),
-                "--log-error=" + getDataDirectory() + "mariadb.log",
-                "--pid-file=" + getDataDirectory() + "mariadb.pid").build();
+            return iList
+                .add(
+                    "--basedir=" + getBaseDirectory(),
+                    "--plugin-dir=" + getMariadbPluginDirectory(),
+                    "--log-error=" + getDataDirectory() + "mariadb.log",
+                    "--pid-file=" + getDataDirectory() + "mariadb.pid")
+                .build();
         }
         else {
-            return ImmutableList.<String>builder().addAll(list).add(
-                "--skip-ssl",
-                "--disable-partition-engine-check",
-                "--explicit_defaults_for_timestamp",
-                "--lc_messages_dir=" + getShareDirectory()).build();
+            return iList
+                .add(
+                    "--skip-ssl",
+                    "--disable-partition-engine-check",
+                    "--explicit_defaults_for_timestamp",
+                    "--lc_messages_dir=" + getShareDirectory())
+                .build();
         }
     }
 }
