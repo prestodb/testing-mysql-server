@@ -43,8 +43,8 @@ LINUX_DIST=dist/$LINUX_NAME
 OSX_NAME=$OSX_BASE.tar.gz
 OSX_DIST=dist/$OSX_NAME
 
-test -e $LINUX_DIST || curl -L -o $LINUX_DIST "$BASEURL/$LINUX_NAME"
-test -e $OSX_DIST || curl -L -o $OSX_DIST "$BASEURL/$OSX_NAME"
+test -e $LINUX_DIST || curl -L -o $LINUX_DIST "$BASEURL/$LINUX_NAME" --fail
+test -e $OSX_DIST || curl -L -o $OSX_DIST "$BASEURL/$OSX_NAME" --fail
 
 PACKDIR=$(mktemp -d "${TMPDIR:-/tmp}/mysql.XXXXXXXXXX")
 $TAR -xf $LINUX_DIST -C $PACKDIR
