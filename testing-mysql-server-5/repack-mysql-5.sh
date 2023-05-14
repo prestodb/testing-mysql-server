@@ -4,7 +4,7 @@ set -eu
 
 VERSION=5.7.22
 BASEURL="https://dev.mysql.com/get/Downloads/MySQL-5.7"
-PPC64LE_BASEURL="http://yum.mariadb.org/10.2/centos/7/ppc64le/rpms/"
+PPC64LE_BASEURL="http://archive.mariadb.org/mariadb-10.2.36/yum/centos/7/ppc64le/rpms"
 
 LINUX_BASE=mysql-$VERSION-linux-glibc2.12-x86_64
 LINUX_PPC64LE_RPM=MariaDB-server-10.2.36-1.el7.centos.ppc64le.rpm
