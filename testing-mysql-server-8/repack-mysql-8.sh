@@ -2,11 +2,12 @@
 
 set -eu
 
-VERSION=8.0.15
+VERSION=8.0.26
 BASEURL="https://dev.mysql.com/get/Downloads/MySQL-8.0"
 
 LINUX_BASE=mysql-$VERSION-linux-glibc2.12-x86_64
-OSX_BASE=mysql-$VERSION-macos10.14-x86_64
+OSX_BASE=mysql-$VERSION-macos11-x86_64
+OSX_AARCH64_BASE=mysql-$VERSION-macos11-arm64
 
 TAR=tar
 command -v gtar >/dev/null && TAR=gtar
@@ -43,12 +44,17 @@ LINUX_DIST=dist/$LINUX_NAME
 OSX_NAME=$OSX_BASE.tar.gz
 OSX_DIST=dist/$OSX_NAME
 
+OSX_AARCH64_NAME=$OSX_AARCH64_BASE.tar.gz
+OSX_AARCH64_DIST=dist/$OSX_AARCH64_NAME
+
 test -e $LINUX_DIST || curl -L -o $LINUX_DIST "$BASEURL/$LINUX_NAME" --fail
 test -e $OSX_DIST || curl -L -o $OSX_DIST "$BASEURL/$OSX_NAME" --fail
+test -e $OSX_AARCH64_DIST || curl -L -o $OSX_AARCH64_DIST "$BASEURL/$OSX_AARCH64_DIST" --fail
 
 PACKDIR=$(mktemp -d "${TMPDIR:-/tmp}/mysql.XXXXXXXXXX")
 $TAR -xf $LINUX_DIST -C $PACKDIR
 pushd $PACKDIR/$LINUX_BASE
+tree .
 $STRIP bin/mysqld
 $TAR -czf $OLDPWD/$RESOURCES/mysql-Linux-amd64.tar.gz \
   LICENSE \
@@ -58,10 +64,9 @@ $TAR -czf $OLDPWD/$RESOURCES/mysql-Linux-amd64.tar.gz \
   share/*.txt \
   share/charsets \
   share/english \
-  lib/libcrypto.* \
-  lib/libssl.* \
-  bin/libcrypto.* \
-  bin/libssl.* \
+  lib/private/libcrypto.* \
+  lib/private/libprotobuf-lite.* \
+  lib/private/libssl.* \
   bin/mysqld
 popd
 rm -rf $PACKDIR
@@ -69,6 +74,7 @@ rm -rf $PACKDIR
 PACKDIR=$(mktemp -d "${TMPDIR:-/tmp}/mysql.XXXXXXXXXX")
 $TAR -xf $OSX_DIST -C $PACKDIR
 pushd $PACKDIR/$OSX_BASE
+tree .
 $TAR -czf $OLDPWD/$RESOURCES/mysql-Mac_OS_X-x86_64.tar.gz \
   LICENSE \
   README \
@@ -78,7 +84,28 @@ $TAR -czf $OLDPWD/$RESOURCES/mysql-Mac_OS_X-x86_64.tar.gz \
   share/charsets \
   share/english \
   lib/libcrypto.* \
+  lib/libprotobuf-lite.* \
   lib/libssl.* \
+  bin/mysqld
+popd
+rm -rf $PACKDIR
+
+PACKDIR=$(mktemp -d "${TMPDIR:-/tmp}/mysql.XXXXXXXXXX")
+$TAR -xf $OSX_AARCH64_DIST -C $PACKDIR
+pushd $PACKDIR/$OSX_AARCH64_BASE
+tree .
+$TAR -czf $OLDPWD/$RESOURCES/mysql-Mac_OS_X-aarch64.tar.gz \
+  LICENSE \
+  README \
+  docs/INFO* \
+  share/*.sql \
+  share/*.txt \
+  share/charsets \
+  share/english \
+  lib/libcrypto.* \
+  lib/libprotobuf-lite.* \
+  lib/libssl.* \
+  bin/libprotobuf-lite.* \
   bin/mysqld
 popd
 rm -rf $PACKDIR
