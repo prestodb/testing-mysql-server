@@ -7,6 +7,7 @@ pom.xml.versionsBackup
 test-output/
 /atlassian-ide-plugin.xml
 .idea
+.vscode
 .*.swp
 .*.swo
 dist/

@@ -73,6 +73,7 @@ final class EmbeddedMySql5
         else {
             return iList
                 .add(
+                    "--user=root",
                     "--skip-ssl",
                     "--disable-partition-engine-check",
                     "--explicit_defaults_for_timestamp",

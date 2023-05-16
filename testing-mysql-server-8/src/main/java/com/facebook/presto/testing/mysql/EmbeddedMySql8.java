@@ -41,7 +41,7 @@ final class EmbeddedMySql8
     public List<String> getStartArguments()
     {
         return ImmutableList.of(
-                "--no-defaults",
+                "--user=root",
                 "--skip-ssl",
                 "--skip-mysqlx",
                 "--default-time-zone=+00:00",
