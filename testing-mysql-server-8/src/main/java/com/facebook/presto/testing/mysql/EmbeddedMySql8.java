@@ -42,7 +42,6 @@ final class EmbeddedMySql8
     {
         return ImmutableList.of(
                 "--no-defaults",
-                "--skip-ssl",
                 "--skip-mysqlx",
                 "--default-time-zone=+00:00",
                 "--innodb-flush-method=nosync",
