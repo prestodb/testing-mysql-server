@@ -29,6 +29,9 @@ then
     exit 100
 fi
 
+PATCHELF=PATCHELF
+command -v patchelf >/dev/null && PATCHELF=patchelf
+
 set -x
 
 cd $(dirname $0)
@@ -83,6 +86,10 @@ function pack_linux() {
     $TAR -xf $1 -C $PACKDIR
     pushd $PACKDIR/$2
     $STRIP bin/mysqld
+    # on newer versions of ubuntu, libaio is replaced with libaiot64. Update the mysql
+    # binary to point to libaio.so which should exist on all systems when
+    # libaio-dev/devel are installed
+    $PATCHELF --replace-needed libaio.so.1 libaio.so bin/mysqld
     $TAR --dereference -czf $OLDPWD/$RESOURCES/$3 \
       LICENSE \
       README \
