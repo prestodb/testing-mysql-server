@@ -1,0 +1,33 @@
+name: Java Maven Build
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+      fail-fast: false
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: Install libaio-dev
+        run: |
+          sudo apt-get install -y libaio-dev
+      - name: Run Maven install
+        run: ./mvnw -B --no-transfer-progress clean install -pl testing-mysql-server-8 -am
