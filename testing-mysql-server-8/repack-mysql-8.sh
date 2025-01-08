@@ -2,11 +2,11 @@
 
 set -eu
 
-VERSION=8.0.15
-BASEURL="https://dev.mysql.com/get/Downloads/MySQL-8.0"
+VERSION=8.4.3
+BASEURL="https://dev.mysql.com/get/Downloads/MySQL-8.4"
 
-LINUX_BASE=mysql-$VERSION-linux-glibc2.12-x86_64
-OSX_BASE=mysql-$VERSION-macos10.14-x86_64
+LINUX_BASE=mysql-$VERSION-linux-glibc2.28-x86_64
+MACOS_BASE=mysql-$VERSION-macos14-x86_64
 
 TAR=tar
 command -v gtar >/dev/null && TAR=gtar
@@ -40,45 +40,65 @@ mkdir -p dist $RESOURCES
 LINUX_NAME=$LINUX_BASE.tar.xz
 LINUX_DIST=dist/$LINUX_NAME
 
-OSX_NAME=$OSX_BASE.tar.gz
-OSX_DIST=dist/$OSX_NAME
+MACOS_NAME=$MACOS_BASE.tar.gz
+MACOS_DIST=dist/$MACOS_NAME
 
 test -e $LINUX_DIST || curl -L -o $LINUX_DIST "$BASEURL/$LINUX_NAME" --fail
-test -e $OSX_DIST || curl -L -o $OSX_DIST "$BASEURL/$OSX_NAME" --fail
+test -e $MACOS_DIST || curl -L -o $MACOS_DIST "$BASEURL/$MACOS_NAME" --fail
 
-PACKDIR=$(mktemp -d "${TMPDIR:-/tmp}/mysql.XXXXXXXXXX")
-$TAR -xf $LINUX_DIST -C $PACKDIR
-pushd $PACKDIR/$LINUX_BASE
-$STRIP bin/mysqld
-$TAR -czf $OLDPWD/$RESOURCES/mysql-Linux-amd64.tar.gz \
-  LICENSE \
-  README \
-  docs/INFO* \
-  share/*.sql \
-  share/*.txt \
-  share/charsets \
-  share/english \
-  lib/libcrypto.* \
-  lib/libssl.* \
-  bin/libcrypto.* \
-  bin/libssl.* \
-  bin/mysqld
-popd
-rm -rf $PACKDIR
+# args:
+# 1: DIST name
+# 2: BASE name
+# 3: packed name (e.g. mysql-$platform-$arch.tar.gz
+function pack_macos() {
+    PACKDIR=$(mktemp -d "${TMPDIR:-/tmp}/mysql.XXXXXXXXXX")
+    $TAR -xf $1 -C $PACKDIR
+    pushd $PACKDIR/$2
+    $TAR --dereference -czf $OLDPWD/$RESOURCES/$3 \
+      LICENSE \
+      README \
+      docs/INFO* \
+      share/*.sql \
+      share/*.txt \
+      share/charsets \
+      share/english \
+      */**/libcrypto.* \
+      */**/libssl.* \
+      */libcrypto.* \
+      */libssl.* \
+      */libprotobuf.* \
+      */libprotobuf-lite.* \
+      bin/mysqld
+    popd
+    rm -rf $PACKDIR
+}
 
-PACKDIR=$(mktemp -d "${TMPDIR:-/tmp}/mysql.XXXXXXXXXX")
-$TAR -xf $OSX_DIST -C $PACKDIR
-pushd $PACKDIR/$OSX_BASE
-$TAR -czf $OLDPWD/$RESOURCES/mysql-Mac_OS_X-x86_64.tar.gz \
-  LICENSE \
-  README \
-  docs/INFO* \
-  share/*.sql \
-  share/*.txt \
-  share/charsets \
-  share/english \
-  lib/libcrypto.* \
-  lib/libssl.* \
-  bin/mysqld
-popd
-rm -rf $PACKDIR
+
+# args:
+# 1: DIST name
+# 2: BASE name
+# 3: packed name (e.g. mysql-$platform-$arch.tar.gz
+function pack_linux() {
+    PACKDIR=$(mktemp -d "${TMPDIR:-/tmp}/mysql.XXXXXXXXXX")
+    $TAR -xf $1 -C $PACKDIR
+    pushd $PACKDIR/$2
+    $STRIP bin/mysqld
+    $TAR --dereference -czf $OLDPWD/$RESOURCES/$3 \
+      LICENSE \
+      README \
+      docs/INFO* \
+      share/*.sql \
+      share/*.txt \
+      share/charsets \
+      share/english \
+      */**/libcrypto.* \
+      */**/libssl.* \
+      */**/libprotobuf-lite.so* \
+      */**/libabsl*.so \
+      bin/mysqld
+    popd
+    rm -rf $PACKDIR
+}
+
+test -e $RESOURCES/mysql-Mac_OS_X-amd64.tar.gz || pack_macos $MACOS_DIST $MACOS_BASE mysql-Mac_OS_X-amd64.tar.gz
+test -e $RESOURCES/mysql-Linux-amd64.tar.gz || pack_linux $LINUX_DIST $LINUX_BASE mysql-Linux-amd64.tar.gz

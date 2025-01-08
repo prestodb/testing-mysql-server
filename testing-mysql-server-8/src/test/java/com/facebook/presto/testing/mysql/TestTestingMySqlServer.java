@@ -21,7 +21,7 @@ public class TestTestingMySqlServer
     @Override
     public String getMySqlVersion()
     {
-        return "8.0.15";
+        return "8.4.3";
     }
 
     @Override
