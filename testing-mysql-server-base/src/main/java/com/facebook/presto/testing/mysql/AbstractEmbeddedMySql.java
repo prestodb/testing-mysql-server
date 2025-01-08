@@ -16,7 +16,6 @@ package com.facebook.presto.testing.mysql;
 import com.facebook.airlift.log.Logger;
 import com.google.common.base.VerifyException;
 import com.google.common.collect.ImmutableList;
-import com.google.common.io.ByteStreams;
 import io.airlift.command.Command;
 import io.airlift.command.CommandFailedException;
 import io.airlift.units.Duration;
@@ -297,7 +296,7 @@ public abstract class AbstractEmbeddedMySql
     {
         executor.execute(() -> {
             try {
-                ByteStreams.copy(in, System.out);
+                in.transferTo(System.out);
             }
             catch (IOException ignored) {
             }
