@@ -42,7 +42,6 @@
 
     <modules>
         <module>testing-mysql-server-base</module>
-        <module>testing-mysql-server-5</module>
         <module>testing-mysql-server-8</module>
     </modules>
 
