@@ -42,6 +42,7 @@ final class EmbeddedMySql8
     {
         return ImmutableList.of(
                 "--no-defaults",
+                "--user=" + System.getProperty("user.name"),
                 "--skip-mysqlx",
                 "--default-time-zone=+00:00",
                 "--innodb-flush-method=nosync",
