@@ -1,4 +1,4 @@
-name: Java Maven Build
+name: Build and Test
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-22.04, ubuntu-24.04]
+        os: [ubuntu-22.04, ubuntu-24.04, macos-14]
       fail-fast: false
     runs-on: ${{ matrix.os }}
 
@@ -24,10 +24,23 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '8'
-          distribution: 'temurin'
+          distribution: 'corretto'
           cache: 'maven'
+      - name: Set up Homebrew
+        if: matrix.os == 'macos-14'
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+      - name: Install GNU binutils
+        if: matrix.os == 'macos-14'
+        run: |
+          brew install binutils
+          brew install patchelf
+          echo /opt/homebrew/opt/binutils/bin >> $GITHUB_PATH
       - name: Install libaio-dev
+        if: matrix.os != 'macos-14'
         run: |
           sudo apt-get install -y libaio-dev
       - name: Run Maven install
-        run: ./mvnw -B --no-transfer-progress clean install -pl testing-mysql-server-8 -am
+        run: |
+          echo $PATH
+          ./mvnw -B --no-transfer-progress clean install -pl testing-mysql-server-8 -am
