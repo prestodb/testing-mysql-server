@@ -6,7 +6,7 @@ VERSION=8.4.3
 BASEURL="https://dev.mysql.com/get/Downloads/MySQL-8.4"
 
 LINUX_BASE=mysql-$VERSION-linux-glibc2.28-x86_64
-MACOS_BASE=mysql-$VERSION-macos14-x86_64
+MACOS_BASE=mysql-$VERSION-macos14-arm64
 
 TAR=tar
 command -v gtar >/dev/null && TAR=gtar
@@ -29,12 +29,12 @@ then
     exit 100
 fi
 
-PATCHELF=PATCHELF
+PATCHELF=patchelf
 command -v patchelf >/dev/null && PATCHELF=patchelf
 
 set -x
 
-cd $(dirname $0)
+cd "$(dirname $0)"
 
 RESOURCES=target/generated-resources
 
@@ -107,5 +107,5 @@ function pack_linux() {
     rm -rf $PACKDIR
 }
 
-test -e $RESOURCES/mysql-Mac_OS_X-amd64.tar.gz || pack_macos $MACOS_DIST $MACOS_BASE mysql-Mac_OS_X-amd64.tar.gz
+test -e $RESOURCES/mysql-Mac_OS_X-aarch64.tar.gz || pack_macos $MACOS_DIST $MACOS_BASE mysql-Mac_OS_X-aarch64.tar.gz
 test -e $RESOURCES/mysql-Linux-amd64.tar.gz || pack_linux $LINUX_DIST $LINUX_BASE mysql-Linux-amd64.tar.gz
